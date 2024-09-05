@@ -19,6 +19,10 @@ export class NotebookTagWidget extends ReactWidget {
   }
 
   render(): JSX.Element {
+    if (!this.notebookPanel) {
+      // files other than notebooks
+      return <div />;
+    }
     return (
       <div className="nbtags-base nbtags-tree-base">
         <NotebookTag
