@@ -43,7 +43,8 @@ RUN mkdir /opt/nbtags && \
     cp /tmp/nbtags/example/99-run-supervisor.sh /usr/local/bin/before-notebook.d/ && \
     chmod +x /usr/local/bin/before-notebook.d/*.sh && \
     cp /tmp/nbtags/example/supervisor.conf /opt/nbtags/ && \
-    cp /tmp/nbtags/example/nginx-ep-proxy.conf.template /opt/nbtags/
+    cp /tmp/nbtags/example/nginx-ep-proxy.conf.template /opt/nbtags/ && \
+    mkdir -p /jupyter_notebook_config.d && chown jovyan:users /jupyter_notebook_config.d
 
 # Boot scripts to perform /usr/local/bin/before-notebook.d/* on JupyterHub
 RUN mkdir -p /opt/nbtags/original/bin/ && \
