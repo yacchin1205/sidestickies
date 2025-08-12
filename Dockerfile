@@ -1,12 +1,22 @@
 FROM solr:8 AS solr
 
-FROM jupyter/scipy-notebook:latest
+FROM quay.io/jupyter/scipy-notebook:latest
 
 USER root
 
-# Install OpenJDK
+# Install Node.js 20.x (required for Etherpad build)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    mkdir -p /.npm && \
+    chown jovyan:users -R /.npm && \
+    rm -rf /var/lib/apt/lists/*
+ENV NPM_CONFIG_PREFIX=/.npm
+ENV PATH=/.npm/bin/:${PATH}
+
+# Install OpenJDK and other dependencies
 RUN apt-get update && apt-get install -yq supervisor openjdk-11-jre \
-    nginx gnupg curl gettext-base netcat \
+    nginx gnupg curl gettext-base netcat-traditional \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
