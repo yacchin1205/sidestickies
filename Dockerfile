@@ -89,7 +89,7 @@ RUN git clone -b feature/search-engine https://github.com/NII-cloud-operation/ep
     && ls -la /tmp/ep_search \
     && npm pack
 RUN npm install -g pnpm && \
-    git clone -b develop https://github.com/ether/etherpad-lite.git /opt/etherpad/ && \
+    git clone -b v2.4.2 https://github.com/ether/etherpad-lite.git /opt/etherpad/ && \
     cd /opt/etherpad && \
     pnpm i && \
     pnpm run build:etherpad && \
