@@ -1,4 +1,5 @@
 import json
+import re
 import urllib
 from urllib.parse import urlencode, quote
 from tornado.httpclient import HTTPRequest, AsyncHTTPClient
@@ -90,8 +91,24 @@ class EpWeaveAPI(BaseAPI):
             return code + '\n'
         elif cell['cell_type'] == 'markdown':
             lines = cell['source'].split('\n')
+
+            # Extract headings and convert to hashtags
+            hashtags = []
+            for line in lines:
+                # Match lines that start with one or more # followed by a space
+                match = re.match(r'^(#+)\s+(.+)', line)
+                if match:
+                    heading_text = match.group(2).strip()
+                    hashtags.append(f'#{heading_text}')
+
             code = '```\n' + '\n'.join(lines) + '\n```'
-            return code + '\n'
+
+            # Add hashtags at the beginning if any headings were found
+            if hashtags:
+                hashtag_line = ' '.join(hashtags) + '\n\n'
+                return hashtag_line + code + '\n'
+            else:
+                return code + '\n'
         else:
             return ''
 
