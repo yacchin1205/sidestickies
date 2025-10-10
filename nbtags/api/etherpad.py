@@ -23,6 +23,8 @@ class EpWeaveAPI(BaseAPI):
         # Build Lucene query with OR operator
         query_parts = [f'hash:"#{meme}"']
 
+        heading_titles = set()
+
         # Add heading queries if provided
         if headings:
             for heading in headings:
@@ -32,6 +34,7 @@ class EpWeaveAPI(BaseAPI):
                 query_parts.append(f'hash:"{heading_tag}"')
                 heading_text = self._heading_text(heading)
                 if heading_text:
+                    heading_titles.add(heading_text)
                     escaped_title = self._escape_lucene(heading_text)
                     query_parts.append(f'title:"{escaped_title}"')
 
@@ -55,8 +58,9 @@ class EpWeaveAPI(BaseAPI):
         num_found = r['numFound']
         pad = self._get_pad_with_title(meme, docs)
         desc = pad['title']
-        if desc == meme and 'shorttext' in pad:
-            desc = pad['shorttext'].split('\n')[0]
+        shorttext = pad.get('shorttext')
+        if shorttext and (desc == meme or desc in heading_titles):
+            desc = shorttext.split('\n')[0]
         return {
             'summary': {
                 'description': desc,
