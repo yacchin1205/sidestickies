@@ -30,6 +30,10 @@ class EpWeaveAPI(BaseAPI):
                 # "# Title" -> "#Title", "## Subtitle" -> "#Subtitle"
                 heading_tag = self._heading_to_hashtag(heading)
                 query_parts.append(f'hash:"{heading_tag}"')
+                heading_text = self._heading_text(heading)
+                if heading_text:
+                    escaped_title = self._escape_lucene(heading_text)
+                    query_parts.append(f'title:"{escaped_title}"')
 
         # Join with OR operator
         search_query = ' OR '.join(query_parts)
@@ -71,6 +75,12 @@ class EpWeaveAPI(BaseAPI):
         # Remove leading hashes and spaces, then add single hash
         text = heading.lstrip('#').strip()
         return f'#{text}'
+
+    def _heading_text(self, heading):
+        return heading.lstrip('#').strip()
+
+    def _escape_lucene(self, text):
+        return text.replace('"', '\\"')
 
     def _get_pad_with_title(self, meme, results):
         results_ = [r for r in results if 'title' in r and r['title'] != meme]
