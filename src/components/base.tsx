@@ -39,7 +39,7 @@ export const Tag: React.FC<Props> = ({
     }
     return '';
   }, [summary]);
-  const hasMultipleAlternatives = alternatives.length > 1;
+  const hasAlternatives = alternatives.length > 0;
 
   useEffect(() => {
     setOptionsOpen(false);
@@ -105,14 +105,14 @@ export const Tag: React.FC<Props> = ({
           handleCreate();
           return;
         }
-        if (hasMultipleAlternatives) {
+        if (hasAlternatives) {
           setOptionsOpen(prev => !prev);
           return;
         }
         openExistingComment(summary);
       })
       .catch(handleError);
-  }, [getMEME, summary, comment, handleCreate, hasMultipleAlternatives, openExistingComment, handleError]);
+  }, [getMEME, summary, comment, handleCreate, hasAlternatives, openExistingComment, handleError]);
 
   return (
     <div className={`nbtags-tag ${desc !== null ? 'nbtags-has-page' : ''}`}>
@@ -137,7 +137,7 @@ export const Tag: React.FC<Props> = ({
         )}
         {hasError && <span className="nbtags-error">!</span>}
       </div>
-      {summary && hasMultipleAlternatives && optionsOpen && (
+      {summary && hasAlternatives && optionsOpen && (
         <div className="nbtags-comment-options">
           <div className="nbtags-comment-options__list">
             {alternatives.map(option => (
