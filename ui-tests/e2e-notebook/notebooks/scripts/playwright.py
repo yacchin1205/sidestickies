@@ -19,6 +19,7 @@ from playwright.async_api import async_playwright, expect
 playwright = None
 current_session_id = None
 current_browser = None
+current_browser_type = None
 current_contexts = None
 default_last_path = None
 context_close_on_fail = True
@@ -37,11 +38,19 @@ async def run_pw(
     new_page=False,
 ):
     global current_browser
+    global current_browser_type
     if current_browser is None:
-        current_browser = await playwright.chromium.launch(
-            headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage", "--lang=ja"],
-        )
+        browser_type = current_browser_type or 'chromium'
+        if browser_type == 'firefox':
+            current_browser = await playwright.firefox.launch(
+                headless=True,
+                args=[],
+            )
+        else:
+            current_browser = await playwright.chromium.launch(
+                headless=True,
+                args=["--no-sandbox", "--disable-dev-shm-usage", "--lang=ja"],
+            )
 
     global current_contexts
     if current_contexts is None or len(current_contexts) == 0 or new_context:
@@ -138,11 +147,12 @@ async def close_latest_page(last_path=None):
     await current_context.close()
 
 
-async def init_pw_context(close_on_fail=True, last_path=None, delay=None):
+async def init_pw_context(close_on_fail=True, last_path=None, delay=None, browser_type='chromium'):
     global playwright
     global current_session_id
     global default_last_path
     global current_browser
+    global current_browser_type
     global temp_dir
     global context_close_on_fail
     global current_contexts
@@ -162,6 +172,7 @@ async def init_pw_context(close_on_fail=True, last_path=None, delay=None):
     )
     temp_dir = tempfile.mkdtemp()
     context_close_on_fail = close_on_fail
+    current_browser_type = browser_type
     default_delay = delay
     console_messages = []
     test_execution_counter = 0
