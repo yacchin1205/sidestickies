@@ -255,6 +255,16 @@ async def _finish_pw_context(screenshot=False, last_path=None):
         print(f"HAR: {dest_har_path}")
     else:
         print(".harファイルの取得に失敗しました。", file=sys.stderr)
+
+    # Save console logs (always, not just on screenshot)
+    console_log_path = os.path.join(
+        last_path or default_last_path, "console.log"
+    )
+    with open(console_log_path, "w") as f:
+        for msg in console_messages:
+            f.write(f"{msg['timestamp']:.3f} {msg['url']} [{msg['type']}] {msg['text']}\n")
+    print(f"Console log: {console_log_path}")
+
     shutil.rmtree(temp_dir)
     for page in current_pages:
         await page.close()
